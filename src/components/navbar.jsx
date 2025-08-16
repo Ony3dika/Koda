@@ -1,0 +1,115 @@
+import { useId } from "react";
+import { Compass,Menu } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import user from "../../public/user2.jpg";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import Image from "next/image";
+import { SidebarTrigger } from "./ui/sidebar";
+
+// Navigation links array to be used in both desktop and mobile menus
+const navigationLinks = [{ href: "/app", label: "Discover", icon: Compass }];
+
+export default function Component() {
+  const id = useId();
+
+  return (
+    <header className='px-4'>
+      <div className='flex h-16 items-center justify-between gap-4'>
+        {/* Left side */}
+        <div className='flex flex-1 items-center gap-2'>
+          {/* Logo */}
+          <SidebarTrigger/>
+          <div className='flex items-center'>
+            {/* <Link
+              href='/'
+              className='text-primary hover:text-primary/90 font-serif text-3xl font-bold'
+            >
+              Styla
+            </Link> */}
+          </div>
+        </div>
+        {/* Middle area */}
+        <NavigationMenu className='max-md:hidden'>
+          <NavigationMenuList className='gap-2'>
+            {navigationLinks.map((link, index) => {
+              const Icon = link.icon;
+              return (
+                <NavigationMenuItem key={index}>
+                  <NavigationMenuLink
+                    active={link.active}
+                    href={link.href}
+                    className='text-foreground hover:text-primary flex-row items-center gap-2 py-1.5 font-medium'
+                  >
+                    <Icon
+                      size={16}
+                      className='text-muted-foreground/80'
+                      aria-hidden='true'
+                    />
+                    <span>{link.label}</span>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              );
+            })}
+          </NavigationMenuList>
+        </NavigationMenu>
+        {/* Right side */}
+        <div className='flex flex-1 items-center justify-end gap-2'>
+          <Avatar>
+            <Image src={user} alt='user' />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+
+          {/* Mobile menu trigger */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className='group size-8 md:hidden'
+                variant='ghost'
+                size='icon'
+              >
+                <Menu />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align='start' className='w-36 p-1 md:hidden'>
+              <NavigationMenu className='max-w-none *:w-full'>
+                <NavigationMenuList className='flex-col items-start gap-0 md:gap-2'>
+                  {navigationLinks.map((link, index) => {
+                    const Icon = link.icon;
+                    return (
+                      <NavigationMenuItem key={index} className='w-full'>
+                        <NavigationMenuLink
+                          href={link.href}
+                          className='flex-row items-center gap-2 py-1.5'
+                          active={link.active}
+                        >
+                          <Icon
+                            size={16}
+                            className='text-muted-foreground/80'
+                            aria-hidden='true'
+                          />
+                          <span>{link.label}</span>
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    );
+                  })}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+    </header>
+  );
+}
