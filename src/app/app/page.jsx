@@ -4,6 +4,7 @@ const HomePage = () => {
   // category = Sales | Blogging | Personal | Work
   const cards = [
     {
+      id: 1,
       title: "Devi Sales Copy",
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
@@ -11,6 +12,7 @@ const HomePage = () => {
       date: "12/12/2023",
     },
     {
+      id: 2,
       title: "Summer Vacation Plan",
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
@@ -18,10 +20,19 @@ const HomePage = () => {
       date: "12/12/2023",
     },
     {
+      id: 3,
       title: "Workout Routine",
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
       category: "Personal",
+      date: "12/12/2023",
+    },
+    {
+      id: 4,
+      title: "Project Meeting Notes",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
+      category: "Work",
       date: "12/12/2023",
     },
   ];
@@ -29,9 +40,9 @@ const HomePage = () => {
     <main className='p-4'>
       <h2 className='text-3xl font-semibold'>Recent files</h2>
 
-      <section className='grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-5'>
+      <section className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5'>
         {cards.map((doc) => (
-          <DocCard key={doc.title} doc={doc} />
+          <DocCard key={doc.id} doc={doc} />
         ))}
       </section>
     </main>

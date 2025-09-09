@@ -4,7 +4,7 @@ const DocPage = ({params}) => {
   const {id} = params
   return (
     <main className='px-4'>
-      <Tiptap />
+      <Tiptap content={"Hello Loser"} />
     </main>
   );
 }

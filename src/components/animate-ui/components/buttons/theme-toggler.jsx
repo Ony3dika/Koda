@@ -29,13 +29,13 @@ const getNextTheme = (effective, modes) => {
 };
 
 function ThemeTogglerButton({
-  variant = 'default',
+  variant = 'outline',
   size = 'default',
   modes = ['light', 'dark', 'system'],
   direction = 'ltr',
   onImmediateChange,
   onClick,
-  className = "rounded-full cursor-pointer p-2 hover:scale-110 transition-all duration-300 ease-in-out",
+  className = "rounded-full cursor-pointer p-2 text-primary transition-all duration-300 ease-in-out",
   ...props
 }) {
   const { theme, resolvedTheme, setTheme } = useTheme();

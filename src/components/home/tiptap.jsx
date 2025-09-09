@@ -72,19 +72,11 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 // import "@/components/tiptap-templates/simple/simple-editor.scss";
 import content from "@/components/tiptap-templates/simple/data/content.json";
 
-const Tiptap = () => {
+const Tiptap = ({content}) => {
   const editor = useEditor({
     extensions: [StarterKit, CharacterCount],
     immediatelyRender: false,
-    content: `Welcome to the Simple Editor template! This template integrates open source UI components and Tiptap extensions licensed under MIT.
-
-    Integrate it by following the Tiptap UI Components docs or using our CLI tool. Features
-
-
-
-    A fully responsive rich text editor with built-in support for common formatting and layout tools. Type markdown ** or use keyboard shortcuts ⌘+B for most all common markdown marks. 🪄
-
-    Add images, customize alignment, and apply advanced formatting to make your writing more engaging and professional.`,
+    content: content,
     extensions: [
       StarterKit.configure({
         horizontalRule: false,

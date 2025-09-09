@@ -7,34 +7,105 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "./ui/badge";
+import {
+  ChevronRight,
+  Ellipsis,
+  BoltIcon,
+  ChevronDownIcon,
+  CopyPlusIcon,
+  FilesIcon,
+  Layers2Icon,
+  TrashIcon,
+  FilePenLine,
+} from "lucide-react";
+import Link from "next/link";
 
 const DocCard = ({ doc }) => {
   const categoryOptions = [
-    { name: "Sales", color: "orange-600" },
-    { name: "Blogging", color: "teal-600" },
-    { name: "Personal", color: "purple-600" },
-    { name: "Work", color: "yellow-500" },
+    { name: "Sales", color: "#00b8db" }, // orange-600
+    { name: "Blogging", color: "#0d9488" }, // teal-600
+    { name: "Personal", color: "#9333ea" }, // purple-600
+    { name: "Work", color: "#eab308" }, // yellow-500
   ];
+  const category = categoryOptions.find((c) => c.name === doc.category);
+  console.log(category);
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className={"flex justify-between items-center"}>
         <CardTitle>{doc.title}</CardTitle>
+
+        <Button
+          variant={"ghost"}
+          className={"rounded-md bg-accent/30"}
+          asChild
+          size={"icon"}
+        >
+          <Link href={`/app/doc/${doc.id}`}>
+            <ChevronRight />
+          </Link>
+        </Button>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className={"mb-5"}>
         <CardDescription>{doc.description}</CardDescription>
       </CardContent>
 
-      <CardFooter className='flex justify-between'>
-        <Badge
-          className={` ${
-            categoryOptions.find((c) => c.name === doc.category).color
-          }`}
-        >
+      <CardFooter>
+        <div className='flex justify-between'>
+          {" "}
+          <Badge variant={"outline"}>{doc.date}</Badge>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost'>
+                <Ellipsis />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+               
+                <DropdownMenuItem>
+                  <FilePenLine
+                    size={16}
+                    className='opacity-60'
+                    aria-hidden='true'
+                  />
+                  Edit
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+               
+                <DropdownMenuItem>
+                  <FilesIcon
+                    size={16}
+                    className='opacity-60'
+                    aria-hidden='true'
+                  />
+                  Clone
+                </DropdownMenuItem>
+                <DropdownMenuItem className={"text-ring"} variant='destructive'>
+                  <TrashIcon size={16} aria-hidden='true' />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <Badge style={{ color: category.color }} className={"bg-accent mt-5"}>
           {doc.category}
         </Badge>
-        <Badge className={"invert"}>{doc.date}</Badge>
       </CardFooter>
     </Card>
   );
