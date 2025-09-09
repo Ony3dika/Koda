@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='md:my-5 bg-background w-full md:rounded-l-2xl'>
+      <main className='md:my-5 bg-background w-full md:rounded-2xl md:mr-4'>
         <Navbar />
         {children}
       </main>

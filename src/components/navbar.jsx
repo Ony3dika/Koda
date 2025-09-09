@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { Compass,Menu } from "lucide-react";
+import { Code2, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +17,10 @@ import user from "../../public/user2.jpg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 import { SidebarTrigger } from "./ui/sidebar";
+import { ThemeTogglerButton } from "./animate-ui/components/buttons/theme-toggler";
 
 // Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [{ href: "/app", label: "Discover", icon: Compass }];
+const navigationLinks = [{ href: "/app", label: "Code", icon: Code2 }];
 
 export default function Component() {
   const id = useId();
@@ -32,12 +33,7 @@ export default function Component() {
           {/* Logo */}
           <SidebarTrigger/>
           <div className='flex items-center'>
-            {/* <Link
-              href='/'
-              className='text-primary hover:text-primary/90 font-serif text-3xl font-bold'
-            >
-              Styla
-            </Link> */}
+      
           </div>
         </div>
         {/* Middle area */}
@@ -70,6 +66,7 @@ export default function Component() {
             <Image src={user} alt='user' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
+          <ThemeTogglerButton/>
 
           {/* Mobile menu trigger */}
           <Popover>

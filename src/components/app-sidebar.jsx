@@ -12,24 +12,19 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../../public/styla.webp";
-import {  Heart, HomeIcon, Settings, Settings2, Shirt } from "lucide-react";
+import logo from "../../public/logo.svg";
+import { FileText, Folder, LogOut,} from "lucide-react";
 
-const items = [
-  { title: "Home", url: "/app", icon: HomeIcon },
-  { title: "Outfit Finder", url: "/app/outfit-finder", icon: Shirt },
-  { title: "Preferences", url: "/app/preferences", icon: Settings2 },
-  { title: "Favourites", url: "/app/favourites", icon: Heart },
-];
+const items = [{ title: "Recent", url: "/app", icon: FileText }];
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible='icon' className={"py-10"}>
+    <Sidebar collapsible={"icon"} className={"my-10"}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href={"/"}>
+            <SidebarMenuButton className={"py-5"} asChild>
+              <Link href={"/app"}>
                 <Image
                   src={logo}
                   className='rounded-full'
@@ -37,10 +32,9 @@ export function AppSidebar() {
                   height={40}
                   alt='styla'
                 />
-                <span className='text-primary hover:text-primary/90 font-serif text-3xl font-bold'>
-                  Styla
+                <span className='text-primary hover:text-primary/90 text-3xl font-bold'>
+                  Koda
                 </span>
-                
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -66,19 +60,36 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Collections</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={"/app/documents"}>
+                    <Folder />
+                    <span>Documents</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton className={"hover:text-red-500 text-red-500/70"}>
+                  <LogOut />
+                  <span>Logout</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href={"/app/settings"}>
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
