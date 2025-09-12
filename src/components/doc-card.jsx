@@ -58,7 +58,7 @@ const DocCard = ({ doc }) => {
         </Button>
       </CardHeader>
 
-      <CardContent className={"mb-5"}>
+      <CardContent>
         <CardDescription>{doc.description}</CardDescription>
       </CardContent>
 

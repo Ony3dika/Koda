@@ -5,6 +5,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.background{
+  background: url(../../public/work.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 :root {
   --background: oklch(0.9821 0 0);
   --foreground: oklch(0.2435 0 0);

@@ -71,6 +71,7 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 // --- Styles ---
 // import "@/components/tiptap-templates/simple/simple-editor.scss";
 import content from "@/components/tiptap-templates/simple/data/content.json";
+import { Separator } from "../ui/separator";
 
 const Tiptap = ({content}) => {
   const editor = useEditor({
@@ -139,6 +140,7 @@ const Tiptap = ({content}) => {
             <TextAlignButton align='justify' />
           </ToolbarGroup>
         </div>
+        <Separator/>
         <div className='w-full overflow-y-scroll mt-5 h-[82vh] [scrollbar-color:--alpha(var(--primary)/0%)_transparent] [scrollbar-width:thin]'>
           {" "}
           <EditorContent editor={editor} />

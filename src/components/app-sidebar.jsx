@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../../public/logo.svg";
+import logo from "../../public/koda.png";
 import { FileText, Folder, LogOut,} from "lucide-react";
 
 const items = [{ title: "Recent", url: "/app", icon: FileText }];
@@ -27,7 +27,7 @@ export function AppSidebar() {
               <Link href={"/app"}>
                 <Image
                   src={logo}
-                  className='rounded-full'
+                  className='rounded-xs'
                   width={40}
                   height={40}
                   alt='styla'
