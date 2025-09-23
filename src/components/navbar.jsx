@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Code2, Menu } from "lucide-react";
+import { Code2, File, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 import { ThemeTogglerButton } from "./animate-ui/components/buttons/theme-toggler";
 import { supabase } from "@/utils/supabase";
 // Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [{ href: "/app", label: "Code", icon: Code2 }];
+const navigationLinks = [{ href: "/app", label: "Notes", icon: File }];
 
 export default function Component() {
   const [userData, setUserData] = useState(null);
