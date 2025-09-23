@@ -23,6 +23,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@supabase/supabase-js": "^2.57.4",
     "@tiptap/extension-character-count": "^3.4.1",
     "@tiptap/extension-highlight": "^3.4.2",
     "@tiptap/extension-horizontal-rule": "^3.4.2",

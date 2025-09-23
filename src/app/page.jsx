@@ -10,22 +10,76 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/animate-ui/components/radix/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/animate-ui/components/radix/tabs";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import koda from "../../public/koda.png";
 import google from "../../public/google.svg";
-
+import { toast } from "sonner";
+import { supabase } from "@/utils/supabase";
+import { useRouter } from "next/navigation";
 export default function Home() {
   const id = useId();
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isSignUpLoading, setIsSignUpLoading] = useState(false);
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
   const [userData, setUserData] = useState({
     password: "",
-    confirmPassword:"",
+    confirmPassword: "",
     email: "",
   });
+  const router = useRouter();
+  // Email SignUp
+  const handleEmailSignUp = async (e) => {
+    setIsSignUpLoading(true);
+    e.preventDefault();
+    if (userData.password != userData.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+    let { data, error } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+     
+    });
+    if (error) {
+      console.error(error);
+
+      toast.error(error.message);
+    } else {
+      console.log("Logged in:", data);
+      toast.success("Account created successfully!");
+    }
+    setIsSignUpLoading(false);
+  };
+
+  //Email Login
+
+  const handleEmailLogin = async (e) => {
+    setIsLoginLoading(true);
+    e.preventDefault();
+    let { data, error } = await supabase.auth.signInWithPassword({
+      email: userData.email,
+      password: userData.password,
+    });
+    if (error) {
+      console.error(error);
+      // alert(error);
+      toast.error(error.message);
+    } else {
+      console.log("Logged in:", data);
+      toast.success("Logged in successfully!");
+      router.push("/app");
+    }
+    setIsLoginLoading(false);
+  };
+
   return (
     <main className='h-screen lg:flex justify-between md:p-5'>
       <section className='basis-[60%] h-full rounded-2xl px-5 lg:px-20 xl:px-44 2xl:px-56 py-10 flex flex-col justify-evenly '>
@@ -45,7 +99,7 @@ export default function Home() {
           Create & Collaborate, All in one place
         </p>
 
-        <Tabs defaultValue='tab-1' className={"w-full  flex items-center "}>
+        <Tabs defaultValue='tab-1' className={"w-full flex items-center h-4/5"}>
           <ScrollArea className={"w-4/5"}>
             <TabsList className='bg-background rounded-lg w-full h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse'>
               <TabsTrigger
@@ -82,7 +136,7 @@ export default function Home() {
               <Image src={google} alt='google' />
               Sign In with Google
             </Button>
-            <form action='' className='w-full'>
+            <form onSubmit={handleEmailLogin} className='w-full'>
               <Input
                 required
                 type='email'
@@ -120,8 +174,8 @@ export default function Home() {
                 </button>
               </div>
 
-              {isLoading ? (
-                <Button disabled className={"mt-10 w-full py-6"}>
+              {isLoginLoading ? (
+                <Button disabled className={"mt-10 animate-pulse w-full py-6"}>
                   <LoaderCircle className='animate-spin' />
                 </Button>
               ) : (
@@ -141,7 +195,7 @@ export default function Home() {
               <Image src={google} alt='google' />
               Sign Up with Google
             </Button>
-            <form action='' className='w-full'>
+            <form onSubmit={handleEmailSignUp} className='w-full'>
               <Input
                 required
                 type='email'
@@ -183,7 +237,10 @@ export default function Home() {
                   id={id}
                   required
                   onChange={(e) =>
-                    setUserData({ ...userData, confirmPassword: e.target.value })
+                    setUserData({
+                      ...userData,
+                      confirmPassword: e.target.value,
+                    })
                   }
                   className='pe-9 py-5 mt-5'
                   placeholder='Confirm Password'
@@ -205,8 +262,8 @@ export default function Home() {
                 </button>
               </div>
 
-              {isLoading ? (
-                <Button disabled className={"mt-10 w-full py-6"}>
+              {isSignUpLoading ? (
+                <Button disabled className={"mt-10 animate-pulse w-full py-6"}>
                   <LoaderCircle className='animate-spin' />
                 </Button>
               ) : (

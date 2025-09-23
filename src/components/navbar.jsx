@@ -1,4 +1,5 @@
-import { useId } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { Code2, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 import { SidebarTrigger } from "./ui/sidebar";
 import { ThemeTogglerButton } from "./animate-ui/components/buttons/theme-toggler";
-
+import { supabase } from "@/utils/supabase";
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [{ href: "/app", label: "Code", icon: Code2 }];
 
 export default function Component() {
-  const id = useId();
+  const [userData, setUserData] = useState(null);
+  const getCurrentUser = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    console.log(user);
+    setUserData(user);
+  };
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   return (
     <header className='px-4'>
@@ -31,10 +43,8 @@ export default function Component() {
         {/* Left side */}
         <div className='flex flex-1 items-center gap-2'>
           {/* Logo */}
-          <SidebarTrigger/>
-          <div className='flex items-center'>
-      
-          </div>
+          <SidebarTrigger />
+          <div className='flex items-center'></div>
         </div>
         {/* Middle area */}
         <NavigationMenu className='max-md:hidden'>
@@ -62,11 +72,14 @@ export default function Component() {
         </NavigationMenu>
         {/* Right side */}
         <div className='flex flex-1 items-center justify-end gap-2'>
+          <p className='text-muted-foreground'>
+            {(userData && userData.email) || "Anon"}
+          </p>
           <Avatar>
             <Image src={user} alt='user' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <ThemeTogglerButton/>
+          <ThemeTogglerButton />
 
           {/* Mobile menu trigger */}
           <Popover>
