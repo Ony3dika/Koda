@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState, useId } from "react";
 import {
   Card,
   CardContent,
@@ -21,16 +22,47 @@ import { Badge } from "./ui/badge";
 import {
   ChevronRight,
   Ellipsis,
-  BoltIcon,
-  ChevronDownIcon,
-  CopyPlusIcon,
   FilesIcon,
-  Layers2Icon,
   TrashIcon,
   FilePenLine,
+  LoaderCircle,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "./ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import Link from "next/link";
-
+import { toast } from "sonner";
+import { useEditDocument } from "@/lib/documet-actions";
+function StatusDot({ className }) {
+  return (
+    <svg
+      width='8'
+      height='8'
+      fill='currentColor'
+      viewBox='0 0 8 8'
+      xmlns='http://www.w3.org/2000/svg'
+      className={className}
+      aria-hidden='true'
+    >
+      <circle cx='4' cy='4' r='4' />
+    </svg>
+  );
+}
 const DocCard = ({ doc }) => {
   const categoryOptions = [
     { name: "Sales", color: "#00b8db" }, // orange-600
@@ -38,8 +70,37 @@ const DocCard = ({ doc }) => {
     { name: "Personal", color: "#9333ea" }, // purple-600
     { name: "Work", color: "#eab308" }, // yellow-500
   ];
+  const id = useId();
   const category = categoryOptions.find((c) => c.name === doc.category);
+  const [open, setOpen] = useState(false);
+  const [documentData, setDocumentData] = useState({
+    title: "",
+    description: "",
+    category: "sales",
+    id: "",
+  });
 
+  const { mutate: editDocument, isPending: isEditingLoading } =
+    useEditDocument();
+  const handleEditDocument = async (e) => {
+    e.preventDefault();
+    editDocument(documentData, {
+      onSuccess: () => {
+        toast.success("Document edited successfully");
+        setDocumentData({
+          title: "",
+          description: "",
+          category: "sales",
+          id: "",
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        console.error(error);
+        toast.error(error?.message || "Failed to edit document");
+      },
+    });
+  };
   return (
     <Card>
       <CardHeader className={"flex justify-between items-center"}>
@@ -81,14 +142,146 @@ const DocCard = ({ doc }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <FilePenLine
-                    size={16}
-                    className='opacity-60'
-                    aria-hidden='true'
-                  />
-                  Edit
-                </DropdownMenuItem>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant={"ghost"}
+                      className={"w-full justify-start px-0 py-1.5 mx-0"}
+                      onClick={() => {
+                        setDocumentData({
+                          title: doc.title,
+                          description: doc.description,
+                          category: doc.category,
+                          id: doc.id,
+                        });
+                      }}
+                    >
+                      <FilePenLine
+                        size={16}
+                        className='opacity-60'
+                        aria-hidden='true'
+                      />
+                      Edit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <div className='flex flex-col gap-2'>
+                      <div
+                        className='flex size-11 shrink-0 items-center justify-center rounded-full border'
+                        aria-hidden='true'
+                      >
+                        <FilesIcon className='opacity-80' size={16} />
+                      </div>
+                      <DialogHeader>
+                        <DialogTitle className='text-left'>
+                          Edit Document
+                        </DialogTitle>
+                        <DialogDescription className='text-left'>
+                          Edit document to make changes
+                        </DialogDescription>
+                      </DialogHeader>
+                    </div>
+                    <form className='space-y-5' onSubmit={handleEditDocument}>
+                      <div className='space-y-4'>
+                        {/* Label */}
+                        <div className='*:not-first:mt-2'>
+                          <Label>Title</Label>
+                          <Input
+                            type='text'
+                            required
+                            value={documentData.title}
+                            onChange={(e) =>
+                              setDocumentData({
+                                ...documentData,
+                                title: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        {/* Desc */}
+                        <div className='*:not-first:mt-2'>
+                          <Label htmlFor={`number-${id}`}>Description</Label>
+
+                          <Textarea
+                            className={"h-24 resize-none"}
+                            required
+                            value={documentData.description}
+                            onChange={(e) =>
+                              setDocumentData({
+                                ...documentData,
+                                description: e.target.value,
+                              })
+                            }
+                          ></Textarea>
+                        </div>
+
+                        {/* Category */}
+                        <div className='*:not-first:mt-2'>
+                          <Label htmlFor={id}>Category</Label>
+                          <Select
+                            defaultValue={documentData.category}
+                            onValueChange={(e) =>
+                              setDocumentData({ ...documentData, category: e })
+                            }
+                          >
+                            <SelectTrigger
+                              id={id}
+                              className='[&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0'
+                            >
+                              <SelectValue placeholder='Select status' />
+                            </SelectTrigger>
+                            <SelectContent className='[&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]>span>svg]:shrink-0'>
+                              <SelectItem value='sales'>
+                                <span className='flex items-center gap-2'>
+                                  <StatusDot className='text-orange-600' />
+                                  <span className='truncate'>Sales</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value='blogging'>
+                                <span className='flex items-center gap-2'>
+                                  <StatusDot className='text-teal-600' />
+                                  <span className='truncate'>Blogging</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value='personal'>
+                                <span className='flex items-center gap-2'>
+                                  <StatusDot className='text-purple-600' />
+                                  <span className='truncate'>Personal</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value='work'>
+                                <span className='flex items-center gap-2'>
+                                  <StatusDot className='text-yellow-500' />
+                                  <span className='truncate'>Work</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value='other'>
+                                <span className='flex items-center gap-2'>
+                                  <StatusDot className='text-gray-500' />
+                                  <span className='truncate'>Other</span>
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      {isEditingLoading ? (
+                        <Button
+                          type='submit'
+                          disabled
+                          className='w-full animate-pulse'
+                        >
+                          <LoaderCircle className='animate-spin mr-2' /> Saving
+                          Changes...
+                        </Button>
+                      ) : (
+                        <Button type='submit' className='w-full'>
+                          Save Changes
+                        </Button>
+                      )}
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
@@ -109,8 +302,8 @@ const DocCard = ({ doc }) => {
           </DropdownMenu>
         </div>
         <Badge
-          style={{ color: doc.color || "#00b8db" }}
-          className={"bg-accent mt-5"}
+         
+          className={"mt-5 bg-primary/20 text-primary/70 border border-primary/30 capitalize"}
         >
           {doc.category}
         </Badge>

@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { useId } from "react";
+import { useState, useId } from "react";
 import { Plus, FilesIcon, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,7 +42,8 @@ function StatusDot({ className }) {
 export default function Component() {
   const id = useId();
   const { userID } = useStore();
-  
+  const [open, setOpen] = useState(false);
+
   const [documentData, setDocumentData] = useState({
     title: "",
     description: "",
@@ -68,6 +68,7 @@ export default function Component() {
           description: "",
           category: "sales",
         });
+        setOpen(false);
       },
       onError: (error) => {
         console.error(error);
@@ -77,7 +78,7 @@ export default function Component() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <div className='flex justify-between'>
         <h2 className='text-3xl font-semibold'>Recent files</h2>
 
