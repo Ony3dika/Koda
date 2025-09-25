@@ -20,22 +20,25 @@ import Image from "next/image";
 import { SidebarTrigger } from "./ui/sidebar";
 import { ThemeTogglerButton } from "./animate-ui/components/buttons/theme-toggler";
 import { supabase } from "@/utils/supabase";
+import { useStore } from "@/app/store";
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [{ href: "/app", label: "Notes", icon: File }];
 
 export default function Component() {
   const [userData, setUserData] = useState(null);
+  const { userID, updateUserID } = useStore();
   const getCurrentUser = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     console.log(user);
     setUserData(user);
+    updateUserID(user.id);
   };
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [updateUserID]);
 
   return (
     <header className='px-4'>

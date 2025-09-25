@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -12,12 +13,16 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import logo from "../../public/koda.png";
-import { FileText, Folder, LogOut,} from "lucide-react";
-
+import { FileText, Folder, LogOut } from "lucide-react";
+import { supabase } from "@/utils/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 const items = [{ title: "Recent", url: "/app", icon: FileText }];
 
 export function AppSidebar() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   return (
     <Sidebar collapsible={"icon"} className={"my-10"}>
       <SidebarHeader>
@@ -81,7 +86,14 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className={"hover:text-red-500 text-red-500/70"}>
+                <SidebarMenuButton
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: ["documents"] });
+                    supabase.auth.signOut();
+                    router.push("/");
+                  }}
+                  className={"hover:text-red-500 text-red-500/70"}
+                >
                   <LogOut />
                   <span>Logout</span>
                 </SidebarMenuButton>

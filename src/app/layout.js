@@ -1,6 +1,7 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TanstackProvider } from "@/providers/tanstack-provider";
 import { Toaster } from "sonner";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -18,8 +19,15 @@ export default function RootLayout({ children }) {
     <html lang='en' suppressHydrationWarning>
       <body className={`bg-sidebar ${plusJakarta.className} antialiased`}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <Toaster richColors theme='system' closeButton position='top-right' />
-          {children}
+          <TanstackProvider>
+            <Toaster
+              richColors
+              theme='system'
+              closeButton
+              position='top-right'
+            />
+            {children}
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>

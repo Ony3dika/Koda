@@ -1,49 +1,23 @@
+"use client";
 import DocCard from "@/components/doc-card";
+import AddDocument from "@/components/add-document-modal";
 import React from "react";
+import { useFetchDocuments } from "@/lib/documet-actions";
+import { Skeleton } from "@/components/ui/skeleton";
 const HomePage = () => {
-  // category = Sales | Blogging | Personal | Work
-  const cards = [
-    {
-      id: 1,
-      title: "Devi Sales Copy",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
-      category: "Sales",
-      date: "12/12/2023",
-    },
-    {
-      id: 2,
-      title: "Summer Vacation Plan",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
-      category: "Blogging",
-      date: "12/12/2023",
-    },
-    {
-      id: 3,
-      title: "Workout Routine",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
-      category: "Personal",
-      date: "12/12/2023",
-    },
-    {
-      id: 4,
-      title: "Project Meeting Notes",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae.",
-      category: "Work",
-      date: "12/12/2023",
-    },
-  ];
+  const { data: documents, isPending } = useFetchDocuments();
+  console.log(documents);
+
   return (
     <main className='p-4'>
-      <h2 className='text-3xl font-semibold'>Recent files</h2>
-
+      <AddDocument />
       <section className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5'>
-        {cards.map((doc) => (
+        {documents?.map((doc) => (
           <DocCard key={doc.id} doc={doc} />
         ))}
+
+        {isPending &&
+          [1, 2, 3, 4].map((doc) => <Skeleton key={doc} className={"h-56"} />)}
       </section>
     </main>
   );

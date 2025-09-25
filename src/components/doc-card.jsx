@@ -39,7 +39,6 @@ const DocCard = ({ doc }) => {
     { name: "Work", color: "#eab308" }, // yellow-500
   ];
   const category = categoryOptions.find((c) => c.name === doc.category);
-  console.log(category);
 
   return (
     <Card>
@@ -65,7 +64,15 @@ const DocCard = ({ doc }) => {
       <CardFooter>
         <div className='flex justify-between'>
           {" "}
-          <Badge variant={"outline"}>{doc.date}</Badge>
+          <Badge variant={"outline"}>
+            {doc.created_at
+              ? new Date(doc.created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : ""}
+          </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='ghost'>
@@ -74,7 +81,6 @@ const DocCard = ({ doc }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>
-               
                 <DropdownMenuItem>
                   <FilePenLine
                     size={16}
@@ -86,7 +92,6 @@ const DocCard = ({ doc }) => {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-               
                 <DropdownMenuItem>
                   <FilesIcon
                     size={16}
@@ -103,7 +108,10 @@ const DocCard = ({ doc }) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <Badge style={{ color: category.color }} className={"bg-accent mt-5"}>
+        <Badge
+          style={{ color: doc.color || "#00b8db" }}
+          className={"bg-accent mt-5"}
+        >
           {doc.category}
         </Badge>
       </CardFooter>
