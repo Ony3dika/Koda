@@ -21,6 +21,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 import { ThemeTogglerButton } from "./animate-ui/components/buttons/theme-toggler";
 import { supabase } from "@/utils/supabase";
 import { useStore } from "@/app/store";
+import { Skeleton } from "./ui/skeleton";
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [{ href: "/app", label: "Notes", icon: File }];
 
@@ -75,9 +76,11 @@ export default function Component() {
         </NavigationMenu>
         {/* Right side */}
         <div className='flex flex-1 items-center justify-end gap-2'>
-          <p className='text-muted-foreground'>
-            {(userData && userData.email) || "Anon"}
-          </p>
+          {userData ? (
+            <p className='text-muted-foreground'>{userData.email}</p>
+          ) : (
+            <Skeleton className={"h-8 md:w-1/3 w-full"} />
+          )}
           <Avatar>
             <Image src={user} alt='user' />
             <AvatarFallback>CN</AvatarFallback>

@@ -65,18 +65,19 @@ function StatusDot({ className }) {
 }
 const DocCard = ({ doc }) => {
   const categoryOptions = [
-    { name: "Sales", color: "#00b8db" }, // orange-600
-    { name: "Blogging", color: "#0d9488" }, // teal-600
-    { name: "Personal", color: "#9333ea" }, // purple-600
-    { name: "Work", color: "#eab308" }, // yellow-500
+    { name: "sales", color: "#f54a00" },
+    { name: "blogging", color: "#0d9488" },
+    { name: "personal", color: "#9333ea" },
+    { name: "work", color: "#eab308" },
+    { name: "other", color: "#6a7282" },
   ];
   const id = useId();
-  const category = categoryOptions.find((c) => c.name === doc.category);
   const [open, setOpen] = useState(false);
   const [documentData, setDocumentData] = useState({
     title: "",
     description: "",
     category: "sales",
+    color: "#f54a00",
     id: "",
   });
 
@@ -108,7 +109,7 @@ const DocCard = ({ doc }) => {
 
         <Button
           variant={"ghost"}
-          className={"rounded-md bg-accent/30"}
+          className={"rounded-lg bg-accent/30"}
           asChild
           size={"icon"}
         >
@@ -221,7 +222,12 @@ const DocCard = ({ doc }) => {
                           <Select
                             defaultValue={documentData.category}
                             onValueChange={(e) =>
-                              setDocumentData({ ...documentData, category: e })
+                              setDocumentData({
+                                ...documentData,
+                                category: e,
+                                color: categoryOptions.find((c) => c.name === e)
+                                  .color,
+                              })
                             }
                           >
                             <SelectTrigger
@@ -302,8 +308,12 @@ const DocCard = ({ doc }) => {
           </DropdownMenu>
         </div>
         <Badge
-         
-          className={"mt-5 bg-primary/20 text-primary/70 border border-primary/30 capitalize"}
+          style={{
+            backgroundColor: `${doc?.color}30`,
+            color: doc?.color,
+            borderColor: doc?.color,
+          }}
+          className={`mt-5 capitalize`}
         >
           {doc.category}
         </Badge>

@@ -38,7 +38,13 @@ function StatusDot({ className }) {
     </svg>
   );
 }
-
+const categoryOptions = [
+  { name: "sales", color: "#f54a00" },
+  { name: "blogging", color: "#0d9488" },
+  { name: "personal", color: "#9333ea" },
+  { name: "work", color: "#eab308" },
+  { name: "other", color: "#6a7282" },
+];
 export default function Component() {
   const id = useId();
   const { userID } = useStore();
@@ -48,6 +54,7 @@ export default function Component() {
     title: "",
     description: "",
     category: "sales",
+    color: "#f54a00",
   });
 
   const { mutate: addDocument, isPending: isCreatingLoading } =
@@ -57,8 +64,10 @@ export default function Component() {
     e.preventDefault();
     const document = {
       ...documentData,
+      content: `title: ${documentData.title} Content`,
       owner_id: userID,
     };
+
     addDocument(document, {
       onSuccess: () => {
         toast.success("Document created successfully");
@@ -67,6 +76,7 @@ export default function Component() {
           title: "",
           description: "",
           category: "sales",
+          color: "#00b8db",
         });
         setOpen(false);
       },
@@ -144,7 +154,11 @@ export default function Component() {
               <Select
                 defaultValue='sales'
                 onValueChange={(e) =>
-                  setDocumentData({ ...documentData, category: e })
+                  setDocumentData({
+                    ...documentData,
+                    category: e,
+                    color: categoryOptions.find((c) => c.name === e).color,
+                  })
                 }
               >
                 <SelectTrigger

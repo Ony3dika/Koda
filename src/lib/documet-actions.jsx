@@ -16,6 +16,20 @@ export const useFetchDocuments = () => {
   return useQuery({ queryKey: ["documents"], queryFn: fetchDocuments });
 };
 
+//Fetch Document by ID
+const fetchDocumentById = async (id) => {
+  const { data, error } = await supabase
+    .from("Documents")
+    .select("*")
+    .eq("id", id)
+    .single();
+  return data;
+};
+
+export const useFetchDocumentById = (id) => {
+  return useQuery({ queryKey: ["document", id], queryFn: ()=>fetchDocumentById(id) });
+};
+
 // Add Document
 const addDocument = async (document) => {
   const { data, error } = await supabase

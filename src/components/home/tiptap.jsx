@@ -1,7 +1,6 @@
 "use client";
 
 import { useEditor, EditorContent, EditorContext } from "@tiptap/react";
-
 import CharacterCount from "@tiptap/extension-character-count";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Image } from "@tiptap/extension-image";
@@ -12,7 +11,6 @@ import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
-import { HeadingButton, toggleHeading } from "../tiptap-ui/heading-button";
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
@@ -52,7 +50,7 @@ import {
 import { MarkButton } from "@/components/tiptap-ui/mark-button";
 import { TextAlignButton } from "@/components/tiptap-ui/text-align-button";
 import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button";
-
+import "@/styles/tiptap.css";
 // --- Icons ---
 import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon";
 import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon";
@@ -63,17 +61,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 
-// --- Components ---
-
-// --- Lib ---
-import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
-
 // --- Styles ---
-// import "@/components/tiptap-templates/simple/simple-editor.scss";
-import content from "@/components/tiptap-templates/simple/data/content.json";
+import "@/components/tiptap-templates/simple/simple-editor.scss";
 import { Separator } from "../ui/separator";
+import { LoaderCircle, Save } from "lucide-react";
+import { useEditDocument } from "@/lib/documet-actions";
+import { toast } from "sonner";
 
-const Tiptap = ({content}) => {
+const Tiptap = ({ content, id }) => {
   const editor = useEditor({
     extensions: [StarterKit, CharacterCount],
     immediatelyRender: false,
@@ -104,6 +99,20 @@ const Tiptap = ({content}) => {
       },
     },
   });
+
+  const { mutate: saveContent, isPending: isSavingContent } = useEditDocument();
+  const handlesaveContent = async () => {
+    const content = { content: editor.getHTML(), id: id };
+
+    saveContent(content, {
+      onSuccess: () => {
+        toast.success("Content Saved");
+      },
+      onError: (err) => {
+        console.error(err?.message);
+      },
+    });
+  };
 
   return (
     <EditorContext.Provider value={{ editor }}>
@@ -139,8 +148,23 @@ const Tiptap = ({content}) => {
             <TextAlignButton align='right' />
             <TextAlignButton align='justify' />
           </ToolbarGroup>
+          <ToolbarSeparator />
+          <ToolbarGroup>
+            {isSavingContent ? (
+              <Button disabled variant='outline' className='animate-pulse'>
+                <LoaderCircle className='animate-spin' />
+              </Button>
+            ) : (
+              <Button
+                onClick={handlesaveContent}
+                className='cursor-pointer ml-2'
+              >
+                <Save strokeWidth={"1.5"} />
+              </Button>
+            )}
+          </ToolbarGroup>
         </div>
-        <Separator/>
+        <Separator />
         <div className='w-full overflow-y-scroll mt-5 h-[82vh] [scrollbar-color:--alpha(var(--primary)/0%)_transparent] [scrollbar-width:thin]'>
           {" "}
           <EditorContent editor={editor} />
