@@ -45,7 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Tag, TagInput } from "emblor";
+// import { Tag, TagInput } from "emblor";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useEditDocument } from "@/lib/documet-actions";
@@ -281,7 +281,7 @@ const DocCard = ({ doc }) => {
                         <div className='*:not-first:mt-2 w-full gap-2'>
                           {" "}
                           <Label htmlFor={id}>Collaborators</Label>
-                          <TagInput
+                          {/* <TagInput
                             id={id}
                             tags={collaborators}
                             type="email"
@@ -306,7 +306,7 @@ const DocCard = ({ doc }) => {
                             setActiveTagIndex={setActiveTagIndex}
                             inlineTags={false}
                             inputFieldPosition='top'
-                          />
+                          /> */}
                         </div>
                       </div>
                       {isEditingLoading ? (
