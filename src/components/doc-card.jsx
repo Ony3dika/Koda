@@ -45,6 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Tag, TagInput } from "emblor";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useEditDocument } from "@/lib/documet-actions";
@@ -63,6 +64,7 @@ function StatusDot({ className }) {
     </svg>
   );
 }
+
 const DocCard = ({ doc }) => {
   const categoryOptions = [
     { name: "sales", color: "#f54a00" },
@@ -80,12 +82,14 @@ const DocCard = ({ doc }) => {
     color: "#f54a00",
     id: "",
   });
+  const [collaborators, setCollaborators] = useState([]);
+  const [activeTagIndex, setActiveTagIndex] = useState(null);
 
   const { mutate: editDocument, isPending: isEditingLoading } =
     useEditDocument();
   const handleEditDocument = async (e) => {
     e.preventDefault();
-    editDocument(documentData, {
+    editDocument({...documentData, collaborators}, {
       onSuccess: () => {
         toast.success("Document edited successfully");
         setDocumentData({
@@ -109,7 +113,9 @@ const DocCard = ({ doc }) => {
 
         <Button
           variant={"ghost"}
-          className={"rounded-lg bg-accent/30"}
+          className={
+            "rounded-full cursor-pointer border border-primary/40 bg-accent/30 text-primary"
+          }
           asChild
           size={"icon"}
         >
@@ -269,6 +275,38 @@ const DocCard = ({ doc }) => {
                               </SelectItem>
                             </SelectContent>
                           </Select>
+                        </div>
+
+                        {/* Collaborators */}
+                        <div className='*:not-first:mt-2 w-full gap-2'>
+                          {" "}
+                          <Label htmlFor={id}>Collaborators</Label>
+                          <TagInput
+                            id={id}
+                            tags={collaborators}
+                            type="email"
+                            setTags={(newTags) => {
+                              setCollaborators(newTags);
+                            }}
+                           
+                            placeholder='e.g johnDoe@gmail.com'
+                            styleClasses={{
+                              tagList: {
+                                container: "gap-3 flex-wrap",
+                              },
+                              input:
+                                "rounded-md w-full transition-[color,box-shadow] placeholder:text-muted-foreground/70 focus-visible:border-ring outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                              tag: {
+                                body: "relative h-7 bg-background border border-input col-span-1 hover:bg-background rounded-md font-medium text-xs ps-2 -mt-1 pe-7",
+                                closeButton:
+                                  "absolute cursor-pointer -inset-y-px -end-px p-0 rounded-s-none rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-muted-foreground/80 hover:text-foreground",
+                              },
+                            }}
+                            activeTagIndex={activeTagIndex}
+                            setActiveTagIndex={setActiveTagIndex}
+                            inlineTags={false}
+                            inputFieldPosition='top'
+                          />
                         </div>
                       </div>
                       {isEditingLoading ? (

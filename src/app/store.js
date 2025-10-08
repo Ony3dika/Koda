@@ -10,6 +10,13 @@ export const useStore = create(
         set(() => ({
           userID: userID,
         })),
+
+      documentName: null,
+
+      updateDocumentName: (documentName) =>
+        set(() => ({
+          documentName: documentName,
+        })),
     }),
     { name: "kodaStore" }
   )

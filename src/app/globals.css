@@ -1,16 +1,22 @@
-/* @import '../styles/_variables.scss'; */
-/* @import '../styles/_keyframe-animations.scss'; */
+
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
-.background{
+.background {
   background: url(../../public/work.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.bg-sidebar{
+  background-color: var(--color-sidebar);
+}
+
 :root {
   --background: oklch(0.9821 0 0);
   --foreground: oklch(0.2435 0 0);
@@ -26,7 +32,7 @@
   --muted-foreground: oklch(0.5032 0 0);
   --accent: oklch(0.931 0 0);
   --accent-foreground: oklch(0.2435 0 0);
-  --destructive: #fb2c36 ;
+  --destructive: #fb2c36;
   --destructive-foreground: oklch(59.665% 0.20182 25.793);
   --border: oklch(0.8822 0 0);
   --input: oklch(0.8822 0 0);
@@ -82,7 +88,7 @@
   --muted-foreground: oklch(0.7699 0 0);
   --accent: oklch(0.285 0 0);
   --accent-foreground: oklch(0.9491 0 0);
-  --destructive: #fb2c36 ;
+  --destructive: #fb2c36;
   --destructive-foreground: oklch(59.665% 0.20182 25.793 / 0.774);
   --border: oklch(0.2348 0.0122 178.2951);
   --input: oklch(0.4017 0 0);

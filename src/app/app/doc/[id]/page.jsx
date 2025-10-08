@@ -1,13 +1,21 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Tiptap from "@/components/home/tiptap";
 import { useFetchDocumentById } from "@/lib/documet-actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStore } from "@/app/store";
 const DocPage = ({ params }) => {
   const resolved = React.use(params);
   const { data: document, isPending } = useFetchDocumentById(resolved.id);
+  const { documentName, updateDocumentName } = useStore();
 
   console.log(document);
+  useEffect(() => {
+    if (!isPending) {
+      updateDocumentName(document.title);
+    }
+  }, [isPending]);
+
   return (
     <main className='px-4'>
       {isPending ? (

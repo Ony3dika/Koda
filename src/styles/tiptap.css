@@ -1,7 +1,25 @@
 @import "../styles/_variables.scss";
 @import "../styles/_keyframe-animations.scss";
 
-.re {
-  color: oklch(64.6% 0.222 41.116); 
-  background-color: oklch(64.6% 0.222 41.116);
+@keyframes tiptap-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tiptap-slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.ProseMirror {
+  animation: tiptap-fadeIn 1.5s ease;
 }

@@ -24,7 +24,7 @@ export function AppSidebar() {
   const router = useRouter();
   const queryClient = useQueryClient();
   return (
-    <Sidebar collapsible={"icon"} className={"my-10"}>
+    <Sidebar collapsible={"icon"} className={"py-10 h-screen bg-sidebar"}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -81,7 +81,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
+        <SidebarGroup className={"mt-auto mb-20"}>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -92,7 +92,7 @@ export function AppSidebar() {
                     supabase.auth.signOut();
                     router.push("/");
                   }}
-                  className={"hover:text-red-500 text-red-500/70"}
+                  className={"hover:text-red-500 text-red-500/70 cursor-pointer"}
                 >
                   <LogOut />
                   <span>Logout</span>

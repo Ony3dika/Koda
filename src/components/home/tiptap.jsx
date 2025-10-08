@@ -22,7 +22,6 @@ import {
 } from "@/components/tiptap-ui-primitive/toolbar";
 
 // --- Tiptap Node ---
-import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension";
 import { HorizontalRule } from "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension";
 import "@/components/tiptap-node/blockquote-node/blockquote-node.scss";
 import "@/components/tiptap-node/code-block-node/code-block-node.scss";
@@ -50,23 +49,20 @@ import {
 import { MarkButton } from "@/components/tiptap-ui/mark-button";
 import { TextAlignButton } from "@/components/tiptap-ui/text-align-button";
 import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button";
-import "@/styles/tiptap.css";
-// --- Icons ---
-import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon";
-import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon";
-import { LinkIcon } from "@/components/tiptap-icons/link-icon";
 
-// --- Hooks ---
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useWindowSize } from "@/hooks/use-window-size";
+// --- Styles ---
+import styles from "@/styles/tiptap.css";
+
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss";
+
 import { Separator } from "../ui/separator";
 import { LoaderCircle, Save } from "lucide-react";
 import { useEditDocument } from "@/lib/documet-actions";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const Tiptap = ({ content, id }) => {
   const editor = useEditor({
@@ -117,7 +113,7 @@ const Tiptap = ({ content, id }) => {
   return (
     <EditorContext.Provider value={{ editor }}>
       <section className='w-full h-full p-3'>
-        <div className='flex items-center justify-center '>
+        <div className='flex items-center justify-center w-full md:w-auto md:overflow-auto  overflow-x-scroll'>
           <ToolbarGroup>
             <UndoRedoButton action='undo' />
             <UndoRedoButton action='redo' />
@@ -152,20 +148,27 @@ const Tiptap = ({ content, id }) => {
           <ToolbarGroup>
             {isSavingContent ? (
               <Button disabled variant='outline' className='animate-pulse'>
-                <LoaderCircle className='animate-spin' />
+                <LoaderCircle size={20} className='animate-spin' />
               </Button>
             ) : (
-              <Button
-                onClick={handlesaveContent}
-                className='cursor-pointer ml-2'
-              >
-                <Save strokeWidth={"1.5"} />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handlesaveContent}
+                    className='cursor-pointer ml-1'
+                  >
+                    <Save size={20} strokeWidth={"1.5"} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Save changes to document</p>
+                </TooltipContent>
+              </Tooltip>
             )}
           </ToolbarGroup>
         </div>
         <Separator />
-        <div className='w-full overflow-y-scroll mt-5 h-[82vh] [scrollbar-color:--alpha(var(--primary)/0%)_transparent] [scrollbar-width:thin]'>
+        <div className='w-full overflow-y-scroll mt-5 h-[82vh] [scrollbar-color:--alpha(var(--primary)/0%)_transparent] [scrollbar-width:thin] tiptap-wrapper'>
           {" "}
           <EditorContent editor={editor} />
         </div>

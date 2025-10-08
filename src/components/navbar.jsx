@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Code2, File, Menu } from "lucide-react";
+import { File, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,11 +23,12 @@ import { supabase } from "@/utils/supabase";
 import { useStore } from "@/app/store";
 import { Skeleton } from "./ui/skeleton";
 // Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [{ href: "/app", label: "Notes", icon: File }];
 
 export default function Component() {
   const [userData, setUserData] = useState(null);
   const { userID, updateUserID } = useStore();
+  const { documentName } = useStore();
+
   const getCurrentUser = async () => {
     const {
       data: { user },
@@ -53,25 +54,18 @@ export default function Component() {
         {/* Middle area */}
         <NavigationMenu className='max-md:hidden'>
           <NavigationMenuList className='gap-2'>
-            {navigationLinks.map((link, index) => {
-              const Icon = link.icon;
-              return (
-                <NavigationMenuItem key={index}>
-                  <NavigationMenuLink
-                    active={link.active}
-                    href={link.href}
-                    className='text-foreground hover:text-primary flex-row items-center gap-2 py-1.5 font-medium'
-                  >
-                    <Icon
-                      size={16}
-                      className='text-muted-foreground/80'
-                      aria-hidden='true'
-                    />
-                    <span>{link.label}</span>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              );
-            })}
+            <NavigationMenuItem>
+              <NavigationMenuLink className='text-foreground hover:text-primary flex-row items-center gap-2 py-1.5 font-medium'>
+                <File
+                  size={16}
+                  className='text-muted-foreground/80'
+                  aria-hidden='true'
+                />
+                <span>
+                  {documentName ? "Recent: " + documentName : "Notes"}
+                </span>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
         {/* Right side */}
@@ -101,25 +95,18 @@ export default function Component() {
             <PopoverContent align='start' className='w-36 p-1 md:hidden'>
               <NavigationMenu className='max-w-none *:w-full'>
                 <NavigationMenuList className='flex-col items-start gap-0 md:gap-2'>
-                  {navigationLinks.map((link, index) => {
-                    const Icon = link.icon;
-                    return (
-                      <NavigationMenuItem key={index} className='w-full'>
-                        <NavigationMenuLink
-                          href={link.href}
-                          className='flex-row items-center gap-2 py-1.5'
-                          active={link.active}
-                        >
-                          <Icon
-                            size={16}
-                            className='text-muted-foreground/80'
-                            aria-hidden='true'
-                          />
-                          <span>{link.label}</span>
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    );
-                  })}
+                  <NavigationMenuItem className='w-full'>
+                    <NavigationMenuLink className='flex-row items-center gap-2 py-1.5'>
+                      <File
+                        size={16}
+                        className='text-muted-foreground/80'
+                        aria-hidden='true'
+                      />
+                      <span>
+                        {documentName ? "Recent: " + documentName : "Notes"}
+                      </span>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
