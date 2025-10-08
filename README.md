@@ -1,6 +1,22 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Setup
+
+### Environment Variables
+
+This project uses Supabase for authentication and database functionality. You need to set up your environment variables:
+
+1. Create a `.env.local` file in the root directory
+2. Add your Supabase project URL and anon key:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
+
+You can find these values in your [Supabase Dashboard](https://app.supabase.com/) under Settings > API.
+
+### Getting Started
 
 First, run the development server:
 
