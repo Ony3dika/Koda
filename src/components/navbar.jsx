@@ -71,7 +71,7 @@ export default function Component() {
         {/* Right side */}
         <div className='flex flex-1 items-center justify-end gap-2'>
           {userData ? (
-            <p className='text-muted-foreground'>{userData.email}</p>
+            <p className='text-muted-foreground md:text-base text-sm'>{userData.email}</p>
           ) : (
             <Skeleton className={"h-8 md:w-1/3 w-full"} />
           )}
@@ -80,37 +80,6 @@ export default function Component() {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <ThemeTogglerButton />
-
-          {/* Mobile menu trigger */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className='group size-8 md:hidden'
-                variant='ghost'
-                size='icon'
-              >
-                <Menu />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align='start' className='w-36 p-1 md:hidden'>
-              <NavigationMenu className='max-w-none *:w-full'>
-                <NavigationMenuList className='flex-col items-start gap-0 md:gap-2'>
-                  <NavigationMenuItem className='w-full'>
-                    <NavigationMenuLink className='flex-row items-center gap-2 py-1.5'>
-                      <File
-                        size={16}
-                        className='text-muted-foreground/80'
-                        aria-hidden='true'
-                      />
-                      <span>
-                        {documentName ? "Recent: " + documentName : "Notes"}
-                      </span>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
     </header>

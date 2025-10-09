@@ -27,7 +27,10 @@ const fetchDocumentById = async (id) => {
 };
 
 export const useFetchDocumentById = (id) => {
-  return useQuery({ queryKey: ["document", id], queryFn: ()=>fetchDocumentById(id) });
+  return useQuery({
+    queryKey: ["document", id],
+    queryFn: () => fetchDocumentById(id),
+  });
 };
 
 // Add Document
@@ -74,6 +77,32 @@ export const useEditDocument = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: editDocument,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+    },
+  });
+};
+
+//Delete Document
+const deleteDocument = async (id) => {
+  const { data, error } = await supabase
+    .from("Documents")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error deleting document:", error);
+    throw error;
+  }
+
+  return data;
+};
+
+export const useDeleteDocument = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteDocument,
+
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },

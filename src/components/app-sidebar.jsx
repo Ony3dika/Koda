@@ -30,13 +30,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton className={"py-5"} asChild>
               <Link href={"/app"}>
-                <Image
-                  src={logo}
-                  className='rounded-xs'
-                  width={40}
-                  height={40}
-                  alt='styla'
-                />
+                <Image src={logo} width={40} height={40} alt='styla' />
                 <span className='text-primary hover:text-primary/90 text-3xl font-bold'>
                   Koda
                 </span>
@@ -92,7 +86,9 @@ export function AppSidebar() {
                     supabase.auth.signOut();
                     router.push("/");
                   }}
-                  className={"hover:text-red-500 text-red-500/70 cursor-pointer"}
+                  className={
+                    "hover:text-red-500 text-red-500/70 cursor-pointer"
+                  }
                 >
                   <LogOut />
                   <span>Logout</span>

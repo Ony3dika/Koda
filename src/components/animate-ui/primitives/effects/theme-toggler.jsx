@@ -12,7 +12,7 @@ function getSystemEffective() {
 function getClipKeyframes(direction) {
   switch (direction) {
     case 'ltr':
-      return ['inset(0 100% 0 0)', 'inset(0 0 0 0)'];
+      return ['inset(0 100% 100% 0)', 'inset(0 0 0 0)'];
     case 'rtl':
       return ['inset(0 0 0 100%)', 'inset(0 0 0 0)'];
     case 'ttb':
@@ -79,7 +79,7 @@ function ThemeToggler({
 
     document.documentElement
       .animate({ clipPath: [fromClip, toClip] }, {
-      duration: 700,
+      duration: 900,
       easing: 'ease-in-out',
       pseudoElement: '::view-transition-new(root)',
     })

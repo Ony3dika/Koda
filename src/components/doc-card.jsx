@@ -48,7 +48,8 @@ import {
 import { Tag, TagInput } from "emblor-maintained";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useEditDocument } from "@/lib/documet-actions";
+import { useEditDocument, useDeleteDocument } from "@/lib/documet-actions";
+import { useStore } from "@/app/store";
 function StatusDot({ className }) {
   return (
     <svg
@@ -87,22 +88,50 @@ const DocCard = ({ doc }) => {
 
   const { mutate: editDocument, isPending: isEditingLoading } =
     useEditDocument();
+
+  const {
+    mutate: deleteDocument,
+    isPending: isDeletePending,
+    error: deleteError,
+  } = useDeleteDocument();
+  const { userID, updateUserID } = useStore();
   const handleEditDocument = async (e) => {
     e.preventDefault();
-    editDocument({...documentData, collaborators}, {
+    editDocument(
+      { ...documentData, collaborators },
+      {
+        onSuccess: () => {
+          toast.success("Document edited successfully");
+          setDocumentData({
+            title: "",
+            description: "",
+            category: "sales",
+            id: "",
+          });
+          setOpen(false);
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(error?.message || "Failed to edit document");
+        },
+      }
+    );
+  };
+
+  const handleDeleteDocument = async (doc) => {
+    if (userID !== doc.owner_id) {
+      toast.info("Document does not belong to this user");
+      return;
+    }
+
+    deleteDocument(doc.id, {
       onSuccess: () => {
-        toast.success("Document edited successfully");
-        setDocumentData({
-          title: "",
-          description: "",
-          category: "sales",
-          id: "",
-        });
-        setOpen(false);
+        toast.success("Document Deleted");
       },
+
       onError: (error) => {
         console.error(error);
-        toast.error(error?.message || "Failed to edit document");
+        toast.error(error?.message || "Failed to delete document");
       },
     });
   };
@@ -161,6 +190,7 @@ const DocCard = ({ doc }) => {
                           category: doc.category,
                           id: doc.id,
                         });
+                        setCollaborators(doc.collaborators);
                       }}
                     >
                       <FilePenLine
@@ -284,11 +314,10 @@ const DocCard = ({ doc }) => {
                           <TagInput
                             id={id}
                             tags={collaborators}
-                            type="email"
+                            type='email'
                             setTags={(newTags) => {
                               setCollaborators(newTags);
                             }}
-                           
                             placeholder='e.g johnDoe@gmail.com'
                             styleClasses={{
                               tagList: {
@@ -337,7 +366,11 @@ const DocCard = ({ doc }) => {
                   />
                   Clone
                 </DropdownMenuItem>
-                <DropdownMenuItem className={"text-ring"} variant='destructive'>
+                <DropdownMenuItem
+                  onClick={() => handleDeleteDocument(doc)}
+                  className={"text-ring"}
+                  variant='destructive'
+                >
                   <TrashIcon size={16} aria-hidden='true' />
                   Delete
                 </DropdownMenuItem>
