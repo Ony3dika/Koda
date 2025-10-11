@@ -14,9 +14,7 @@ import { Selection } from "@tiptap/extensions";
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
-import { Spacer } from "@/components/tiptap-ui-primitive/spacer";
 import {
-  Toolbar,
   ToolbarGroup,
   ToolbarSeparator,
 } from "@/components/tiptap-ui-primitive/toolbar";
@@ -36,16 +34,8 @@ import { ImageUploadButton } from "@/components/tiptap-ui/image-upload-button";
 import { ListDropdownMenu } from "@/components/tiptap-ui/list-dropdown-menu";
 import { BlockquoteButton } from "@/components/tiptap-ui/blockquote-button";
 import { CodeBlockButton } from "@/components/tiptap-ui/code-block-button";
-import {
-  ColorHighlightPopover,
-  ColorHighlightPopoverContent,
-  ColorHighlightPopoverButton,
-} from "@/components/tiptap-ui/color-highlight-popover";
-import {
-  LinkPopover,
-  LinkContent,
-  LinkButton,
-} from "@/components/tiptap-ui/link-popover";
+import { ColorHighlightPopover } from "@/components/tiptap-ui/color-highlight-popover";
+import { LinkPopover } from "@/components/tiptap-ui/link-popover";
 import { MarkButton } from "@/components/tiptap-ui/mark-button";
 import { TextAlignButton } from "@/components/tiptap-ui/text-align-button";
 import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button";
@@ -63,12 +53,34 @@ import { LoaderCircle, Save } from "lucide-react";
 import { useEditDocument } from "@/lib/documet-actions";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { supabase } from "@/utils/supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import { useStore } from "@/app/store";
+import { useEffect, useRef, useState } from "react";
 
+const debounce = (func, wait) => {
+  let timeout;
+  return (content) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(content), wait);
+  };
+};
 const Tiptap = ({ content, id }) => {
+  const { userID, updateUserID } = useStore();
+
+  // Generate a test user ID if none exists
+  useEffect(() => {
+    if (!userID) {
+      const testUserId = `user_${Math.random().toString(36).substr(2, 9)}`;
+      updateUserID(testUserId);
+    }
+  }, [userID, updateUserID]);
+
+  const [presence, setPresence] = useState({});
+  const [connectionStatus, setConnectionStatus] = useState("disconnected");
+  const presenceChannel = useRef(null);
+  const isLocalChange = useRef(false);
   const editor = useEditor({
-    extensions: [StarterKit, CharacterCount],
-    immediatelyRender: false,
-    content: content,
     extensions: [
       StarterKit.configure({
         horizontalRule: false,
@@ -87,7 +99,15 @@ const Tiptap = ({ content, id }) => {
       Superscript,
       Subscript,
       Selection,
+      CharacterCount,
     ],
+    immediatelyRender: false,
+    content: content,
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      // Send back to parent or update your state
+      broadcastContentChange(html);
+    },
     editorProps: {
       attributes: {
         class:
@@ -95,14 +115,15 @@ const Tiptap = ({ content, id }) => {
       },
     },
   });
-
   const { mutate: saveContent, isPending: isSavingContent } = useEditDocument();
+
+  // Save Document
   const handlesaveContent = async () => {
     const content = { content: editor.getHTML(), id: id };
 
     saveContent(content, {
       onSuccess: () => {
-        toast.success("Content Saved");
+        toast.success("Document Saved");
       },
       onError: (err) => {
         console.error(err?.message);
@@ -110,66 +131,209 @@ const Tiptap = ({ content, id }) => {
     });
   };
 
+  useEffect(() => {
+    const setupPresence = async () => {
+      if (!userID || !id || !editor) return;
+
+      const channel = supabase.channel(`document:${id}`, {
+        config: {
+          presence: {
+            key: userID,
+          },
+        },
+      });
+
+      // Set up presence tracking
+      channel.on("presence", { event: "sync" }, () => {
+        const state = channel.presenceState();
+        const presenceData = {};
+        Object.entries(state).forEach(([key, value]) => {
+          if (Array.isArray(value) && value.length > 0) {
+            const presence = value[0];
+            presenceData[key] = presence;
+          }
+        });
+        setPresence(presenceData);
+      });
+
+      channel.on("presence", { event: "join" }, ({ key, newPresences }) => {
+        if (newPresences && newPresences.length > 0) {
+          setPresence((prev) => ({ ...prev, [key]: newPresences[0] }));
+        }
+      });
+
+      channel.on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+        setPresence((prev) => {
+          const newPresence = { ...prev };
+          delete newPresence[key];
+          return newPresence;
+        });
+      });
+
+      // Listen for content changes from other users
+      channel.on("broadcast", { event: "content_change" }, ({ payload }) => {
+        console.log(
+          "Received content change from:",
+          payload.userId,
+          "Current user:",
+          userID
+        );
+        if (payload.userId !== userID && editor) {
+          isLocalChange.current = true;
+          editor.commands.setContent(payload.content);
+          isLocalChange.current = false;
+        }
+      });
+
+      // Subscribe to the channel and track presence
+      const subscribePromise = channel.subscribe(async (status) => {
+        setConnectionStatus(status);
+        if (status === "SUBSCRIBED") {
+          await channel.track({
+            user: userID,
+            cursor: null,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+      presenceChannel.current = channel;
+
+      return subscribePromise;
+    };
+
+    setupPresence();
+
+    return () => {
+      if (presenceChannel.current) {
+        presenceChannel.current.unsubscribe();
+      }
+    };
+  }, [userID, id, editor]);
+
+  const broadcastContentChange = debounce(async (newContent) => {
+    if (!presenceChannel.current || !userID || isLocalChange.current) {
+      return;
+    }
+
+    try {
+      console.log("Broadcasting content change from user:", userID);
+      await presenceChannel.current.send({
+        type: "broadcast",
+        event: "content_change",
+        payload: {
+          userId: userID,
+          content: newContent,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to broadcast content change:", error);
+    }
+  }, 300);
+
   return (
     <EditorContext.Provider value={{ editor }}>
-      <section className='w-full h-full p-3'>
-        <div className='flex items-center justify-center w-full md:w-auto md:overflow-auto  overflow-x-scroll'>
-          <ToolbarGroup>
-            <UndoRedoButton action='undo' />
-            <UndoRedoButton action='redo' />
-          </ToolbarGroup>
-          <ToolbarSeparator />
-          <ToolbarGroup>
-            <HeadingDropdownMenu portal={false} levels={[1, 2, 3, 4]} />
-            <ListDropdownMenu
-              types={["bulletList", "orderedList", "taskList"]}
-            />
-            <BlockquoteButton />
-            <CodeBlockButton />
-          </ToolbarGroup>
-          <ToolbarSeparator />
-          <ToolbarGroup>
-            <MarkButton type='bold' />
-            <MarkButton type='italic' />
-            <MarkButton type='strike' />
-            <MarkButton type='code' />
-            <MarkButton type='underline' />
-            <ColorHighlightPopover />
-            <LinkPopover />
-          </ToolbarGroup>
-          <ToolbarSeparator />
-          <ToolbarGroup>
-            <TextAlignButton align='left' />
-            <TextAlignButton align='center' />
-            <TextAlignButton align='right' />
-            <TextAlignButton align='justify' />
-          </ToolbarGroup>
-          <ToolbarSeparator />
-          <ToolbarGroup>
-            {isSavingContent ? (
-              <Button disabled variant='outline' className='animate-pulse'>
-                <LoaderCircle size={20} className='animate-spin' />
-              </Button>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={handlesaveContent}
-                    className='cursor-pointer ml-1'
-                  >
-                    <Save size={20} strokeWidth={"1.5"} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Save changes to document</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </ToolbarGroup>
-        </div>
-        <Separator />
-        <div className='w-full overflow-y-scroll mt-5 h-[82vh] [scrollbar-color:--alpha(var(--primary)/0%)_transparent] [scrollbar-width:thin] tiptap-wrapper'>
+      <section className='w-full h-full relative p-3'>
+        <div className='sticky top-0 bg-background/90 backdrop-blur-xl z-10'>
           {" "}
+          <div className='flex items-center justify-center w-full md:w-auto md:overflow-auto  overflow-x-scroll mb-2'>
+            <ToolbarGroup>
+              <UndoRedoButton action='undo' />
+              <UndoRedoButton action='redo' />
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              <HeadingDropdownMenu portal={false} levels={[1, 2, 3, 4]} />
+              <ListDropdownMenu
+                types={["bulletList", "orderedList", "taskList"]}
+              />
+              <BlockquoteButton />
+              <CodeBlockButton />
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              <MarkButton type='bold' />
+              <MarkButton type='italic' />
+              <MarkButton type='strike' />
+              <MarkButton type='code' />
+              <MarkButton type='underline' />
+              <ColorHighlightPopover />
+              <LinkPopover />
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              <TextAlignButton align='left' />
+              <TextAlignButton align='center' />
+              <TextAlignButton align='right' />
+              <TextAlignButton align='justify' />
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              {isSavingContent ? (
+                <Button disabled variant='outline' className='animate-pulse'>
+                  <LoaderCircle size={20} className='animate-spin' />
+                </Button>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handlesaveContent}
+                      className='cursor-pointer ml-1'
+                    >
+                      <Save size={20} strokeWidth={"1.5"} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save changes to document</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </ToolbarGroup>
+          </div>
+          <Separator />
+        </div>
+
+        {/* Connection Status and Online Users Indicator */}
+        <div className='md:flex hidden items-center justify-between mt-2 mb-2 top-5 sticky z-10'>
+          <div className='flex items-center gap-2'>
+            <div
+              className={`w-2 h-2 rounded-full ${
+                connectionStatus === "SUBSCRIBED"
+                  ? "bg-green-500"
+                  : connectionStatus === "CHANNEL_ERROR"
+                  ? "bg-red-500"
+                  : "bg-yellow-500"
+              }`}
+            />
+            <span className='text-xs text-muted-foreground'>
+              {connectionStatus === "SUBSCRIBED"
+                ? "Connected"
+                : connectionStatus === "CHANNEL_ERROR"
+                ? "Connection Error"
+                : "Connecting..."}
+            </span>
+          </div>
+
+          {Object.keys(presence).length > 0 && (
+            <div className='flex items-center gap-2'>
+              <span className='text-xs text-muted-foreground'>
+                {Object.keys(presence).length} user
+                {Object.keys(presence).length !== 1 ? "s" : ""} online
+              </span>
+              <div className='flex gap-1'>
+                {Object.keys(presence).map((userId) => (
+                  <div
+                    key={userId}
+                    className='w-2 h-2 bg-blue-500 rounded-full'
+                    title={`User ${userId}`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className='w-full mt-5 h-[82vh] tiptap-wrapper'>
           <EditorContent editor={editor} />
         </div>
       </section>

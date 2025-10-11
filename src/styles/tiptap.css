@@ -22,4 +22,5 @@
 }
 .ProseMirror {
   animation: tiptap-fadeIn 1.5s ease;
+  scrollbar-color: red;
 }

@@ -11,7 +11,7 @@ const HomePage = () => {
   return (
     <main className='p-4'>
       <AddDocument />
-      <section className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4  mt-5'>
+      <section className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5 '>
         {documents?.map((doc) => (
           <DocCard key={doc.id} doc={doc} />
         ))}

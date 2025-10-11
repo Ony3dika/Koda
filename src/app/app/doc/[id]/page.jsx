@@ -17,7 +17,7 @@ const DocPage = ({ params }) => {
   }, [isPending]);
 
   return (
-    <main className='px-4'>
+    <main className='px-4 h-[80vh] overflow-auto'>
       {isPending ? (
         <div className='flex flex-col gap-4'>
           <Skeleton className='w-full h-8' />

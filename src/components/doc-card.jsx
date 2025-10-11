@@ -26,6 +26,8 @@ import {
   TrashIcon,
   FilePenLine,
   LoaderCircle,
+  CircleUser,
+  FileEdit,
 } from "lucide-react";
 import {
   Dialog,
@@ -181,6 +183,7 @@ const DocCard = ({ doc }) => {
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <Button
+                      disabled={userID !== doc.owner_id}
                       variant={"ghost"}
                       className={"w-full justify-start px-0 py-1.5 mx-0"}
                       onClick={() => {
@@ -207,7 +210,7 @@ const DocCard = ({ doc }) => {
                         className='flex size-11 shrink-0 items-center justify-center rounded-full border'
                         aria-hidden='true'
                       >
-                        <FilesIcon className='opacity-80' size={16} />
+                        <FileEdit className='opacity-80' size={16} />
                       </div>
                       <DialogHeader>
                         <DialogTitle className='text-left'>
@@ -367,6 +370,7 @@ const DocCard = ({ doc }) => {
                   Clone
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  disabled={userID !== doc.owner_id}
                   onClick={() => handleDeleteDocument(doc)}
                   className={"text-ring"}
                   variant='destructive'
@@ -378,16 +382,24 @@ const DocCard = ({ doc }) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <Badge
-          style={{
-            backgroundColor: `${doc?.color}30`,
-            color: doc?.color,
-            borderColor: doc?.color,
-          }}
-          className={`mt-5 capitalize`}
-        >
-          {doc.category}
-        </Badge>
+
+        <div className='mt-5 flex items-center justify-between'>
+          {" "}
+          <Badge className={"text-muted-foreground"} variant={"outline"}>
+            <CircleUser className='mr-1' />
+            {userID === doc.owner_id ? "Owner" : "Collaborator"}
+          </Badge>
+          <Badge
+            style={{
+              backgroundColor: `${doc?.color}30`,
+              color: doc?.color,
+              borderColor: doc?.color,
+            }}
+            className={`capitalize`}
+          >
+            {doc.category}
+          </Badge>
+        </div>
       </CardFooter>
     </Card>
   );

@@ -71,14 +71,24 @@ export default function Component() {
         {/* Right side */}
         <div className='flex flex-1 items-center justify-end gap-2'>
           {userData ? (
-            <p className='text-muted-foreground md:text-base text-sm'>{userData.email}</p>
+            <>
+              <p className='text-muted-foreground md:text-base text-sm'>
+                {userData.email}
+              </p>
+              <Avatar>
+                <Image src={user} alt='user' />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </>
           ) : (
-            <Skeleton className={"h-8 md:w-1/3 w-full"} />
+            <>
+              {" "}
+              <Skeleton className={"h-8 md:w-1/3 w-full"} />
+
+              <Skeleton className={"h-8 w-8 rounded-full"}/>
+            </>
           )}
-          <Avatar>
-            <Image src={user} alt='user' />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+
           <ThemeTogglerButton />
         </div>
       </div>
