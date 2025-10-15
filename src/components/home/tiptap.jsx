@@ -57,7 +57,7 @@ import { supabase } from "@/utils/supabase";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useStore } from "@/app/store";
 import { useEffect, useRef, useState } from "react";
-
+import Notification from "@/components/notification"
 const debounce = (func, wait) => {
   let timeout;
   return (content) => {
@@ -234,6 +234,7 @@ const Tiptap = ({ content, id }) => {
   return (
     <EditorContext.Provider value={{ editor }}>
       <section className='w-full h-full relative p-3'>
+        <Notification/>
         <div className='sticky top-0 bg-background/90 backdrop-blur-xl z-10'>
           {" "}
           <div className='flex items-center justify-center w-full md:w-auto md:overflow-auto  overflow-x-scroll mb-2'>
@@ -243,7 +244,7 @@ const Tiptap = ({ content, id }) => {
             </ToolbarGroup>
             <ToolbarSeparator />
             <ToolbarGroup>
-              <HeadingDropdownMenu portal={false} levels={[1, 2, 3, 4]} />
+              <HeadingDropdownMenu levels={[1, 2, 3, 4]} />
               <ListDropdownMenu
                 types={["bulletList", "orderedList", "taskList"]}
               />

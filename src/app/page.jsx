@@ -46,7 +46,6 @@ export default function Home() {
     let { data, error } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
-     
     });
     if (error) {
       console.error(error);
@@ -60,7 +59,6 @@ export default function Home() {
   };
 
   //Email Login
-
   const handleEmailLogin = async (e) => {
     setIsLoginLoading(true);
     e.preventDefault();
@@ -78,6 +76,20 @@ export default function Home() {
       router.push("/app");
     }
     setIsLoginLoading(false);
+  };
+
+  //Google Login
+  const handleSignInWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -132,7 +144,11 @@ export default function Home() {
             <p className='my-10 text-sm'>
               Welcome Back <span className='text-primary'>Documentor</span>
             </p>
-            <Button variant={"outline"} className={"w-full py-5"}>
+            <Button
+              onClick={handleSignInWithGoogle}
+              variant={"outline"}
+              className={"w-full py-5"}
+            >
               <Image src={google} alt='google' />
               Sign In with Google
             </Button>
@@ -191,7 +207,7 @@ export default function Home() {
             <p className='my-10 text-sm'>
               Become a <span className='text-primary'>Documentor</span>
             </p>
-            <Button variant={"outline"} className={"w-full py-5"}>
+            <Button onClick={handleSignInWithGoogle} variant={"outline"} className={"w-full py-5"}>
               <Image src={google} alt='google' />
               Sign Up with Google
             </Button>

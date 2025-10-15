@@ -18,7 +18,7 @@ import logo from "../../public/koda.png";
 import { FileText, Folder, LogOut } from "lucide-react";
 import { supabase } from "@/utils/supabase";
 import { useQueryClient } from "@tanstack/react-query";
-const items = [{ title: "Recent", url: "/app", icon: FileText }];
+const items = [{ title: "Files", url: "/app", icon: FileText }];
 
 export function AppSidebar() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>For You</SidebarGroupLabel>
+          <SidebarGroupLabel>Documents</SidebarGroupLabel>
           <SidebarGroupContent>
             {" "}
             <SidebarMenu>
@@ -59,21 +59,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Collections</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href={"/app/documents"}>
-                    <Folder />
-                    <span>Documents</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        
 
         <SidebarGroup className={"mt-auto mb-20"}>
           <SidebarGroupLabel>Account</SidebarGroupLabel>

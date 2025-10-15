@@ -1,6 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { File, Menu } from "lucide-react";
+import {
+  CircleUser,
+  File,
+  Menu,
+  User,
+  User2,
+  UserRoundPlus,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -76,16 +83,20 @@ export default function Component() {
                 {userData.email}
               </p>
               <Avatar>
-                <Image src={user} alt='user' />
-                <AvatarFallback>CN</AvatarFallback>
+                {userData.user_metadata.avatar_url && (
+                  <Image width={40} height={40} className="rounded-full border" src={userData.user_metadata.avatar_url} alt='user' />
+                )}
+
+                <AvatarFallback>
+                  <CircleUser strokeWidth={1} />
+                </AvatarFallback>
               </Avatar>
             </>
           ) : (
             <>
               {" "}
               <Skeleton className={"h-8 md:w-1/3 w-full"} />
-
-              <Skeleton className={"h-8 w-8 rounded-full"}/>
+              <Skeleton className={"h-8 w-8 rounded-full"} />
             </>
           )}
 

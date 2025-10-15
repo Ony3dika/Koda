@@ -89,16 +89,12 @@ export default function Component() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className='flex justify-between'>
-        <h2 className='text-3xl font-semibold'>Recent files</h2>
-
-        <DialogTrigger>
-          <Button>
-            <Plus /> Create New
-          </Button>
-        </DialogTrigger>
-      </div>
-
+    
+      <DialogTrigger>
+        <Button>
+          <Plus /> Create New
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <div className='flex flex-col gap-2'>
           <div
@@ -201,8 +197,6 @@ export default function Component() {
                 </SelectContent>
               </Select>
             </div>
-
-            
           </div>
 
           {isCreatingLoading ? (

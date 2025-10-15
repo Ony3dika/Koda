@@ -27,6 +27,12 @@ const DocPage = ({ params }) => {
           <Skeleton className='w-3/4 h-8' />
           <Skeleton className='w-full h-8' />
           <Skeleton className='w-3/5 h-8' />
+          <Skeleton className='w-full h-8' />
+          <Skeleton className='w-1/3 h-8' />
+          <Skeleton className='w-2/3 h-8' />
+          <Skeleton className='w-4/5 h-8' />
+          <Skeleton className='w-1/3 h-8' />
+          <Skeleton className='w-2/3 h-8' />
         </div>
       ) : (
         <Tiptap content={document?.content} id={resolved.id} />
